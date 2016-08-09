@@ -1,3 +1,4 @@
+#include <iostream>
 #include <string>
 #include <random>
 #include <sstream>
@@ -6,6 +7,7 @@
 #include <Magick++.h>
 
 #define stringify(s) #s
+#define tostring(x) stringify(x)
 
 static unsigned int MAX_DEPTH = std::numeric_limits<Magick::Quantum>::max();
 
@@ -44,15 +46,16 @@ static std::vector<std::string> get_ls(const std::string &dir) {
     struct dirent *dp;
     std::vector<std::string> result;
     while((dp = readdir(dirp)) != NULL)
-        result.emplace_back(dp->d_name);
+        if(dp->d_name[0] == '.') continue;
+        else result.emplace_back(dp->d_name);
     (void)closedir(dirp);
     return result;
 }
 
 static std::string get_random_font() {
     std::stringstream stream;
-    static std::vector<std::string> fonts = get_ls(stringify(FONT_PATH));
-    stream << "@" << stringify(FONT_PATH) << "/" << fonts.at(random() % fonts.size());
+    static std::vector<std::string> fonts = get_ls(tostring(FONT_PATH));
+    stream << "@" << tostring(FONT_PATH) << "/" << fonts.at(random() % fonts.size());
     return stream.str().c_str();
 }
 
@@ -78,12 +81,13 @@ static void print_digit(Magick::Image &image, char digit, bool first) {
 static void print_lines(Magick::Image &image) {
     typedef std::mt19937 Gen;
     typedef std::normal_distribution<double> Dist;
-    Gen r;
+    Gen r(time(NULL));
     Dist d(100, 15);
+    auto rr = std::bind(d, r);
     image.fillColor(Magick::Color("white"));
     image.strokeColor(Magick::Color("gray"));
     const Magick::Geometry &g = image.size();
-    int count = (static_cast<int>(d(r)) / 40), dist = g.height() / count;
+    int count = (static_cast<int>(rr()) / 40), dist = g.height() / count;
     for (long i = 0; i < count; ++i) {
         Magick::DrawableLine line(0, i * dist+10, g.width() - 1, i * dist);
         image.draw(line);
@@ -106,7 +110,7 @@ static void print_image(Magick::Image &image, const std::string &number) {
     double sw = random() % 10 - 20;
     image.swirl(sw);
     image.wave(8, image.size().width() / (random() % 3 + 1));
-    image.trim();
+    //image.trim();
     long nu_width = right_pos(image) - left_pos(image) + 8;
     Magick::Image centered(Magick::Geometry(IMAGE_WIDTH, IMAGE_HEIGHT), Magick::Color("white"));
     centered.composite(image, (IMAGE_WIDTH-nu_width)/2, 0, Magick::OverCompositeOp);

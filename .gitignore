@@ -3,3 +3,5 @@ CMakeFiles/
 Makefile
 cmake_install.cmake
 libgenerator.so
+generated.png
+generator_test
