@@ -5,6 +5,8 @@
 #include <dirent.h>
 #include <Magick++.h>
 
+#define stringify(s) #s
+
 static unsigned int MAX_DEPTH = std::numeric_limits<Magick::Quantum>::max();
 
 static bool white(const Magick::PixelPacket *p) {
@@ -42,15 +44,15 @@ static std::vector<std::string> get_ls(const std::string &dir) {
     struct dirent *dp;
     std::vector<std::string> result;
     while((dp = readdir(dirp)) != NULL)
-        result.emplace_back(dp->d_name, dp->d_namlen);
+        result.emplace_back(dp->d_name);
     (void)closedir(dirp);
     return result;
 }
 
 static std::string get_random_font() {
     std::stringstream stream;
-    static std::vector<std::string> fonts = get_ls(FONT_PATH);
-    stream << "@" << FONT_PATH << "/" << fonts.at(random() % fonts.size());
+    static std::vector<std::string> fonts = get_ls(stringify(FONT_PATH));
+    stream << "@" << stringify(FONT_PATH) << "/" << fonts.at(random() % fonts.size());
     return stream.str().c_str();
 }
 
@@ -78,7 +80,6 @@ static void print_lines(Magick::Image &image) {
     typedef std::normal_distribution<double> Dist;
     Gen r;
     Dist d(100, 15);
-    boost::variate_generator<Gen, Dist> gen(r, d);
     image.fillColor(Magick::Color("white"));
     image.strokeColor(Magick::Color("gray"));
     const Magick::Geometry &g = image.size();
@@ -99,8 +100,8 @@ static void setup_image(Magick::Image &image) {
     image.borderColor(Magick::Color("white"));
 }
 
-static void print_image(Magick::Image &image, const baida::string &number) {
-    for(baida::string::size_type i=0;i<number.size();i++)
+static void print_image(Magick::Image &image, const std::string &number) {
+    for(std::string::size_type i=0;i<number.size();i++)
         print_digit(image,number[i],!i);
     double sw = random() % 10 - 20;
     image.swirl(sw);
@@ -121,7 +122,7 @@ static void print_image(Magick::Image &image, const baida::string &number) {
 std::string generate_png(const std::string &text) {
     Magick::Image image(Magick::Geometry(IMAGE_WIDTH, IMAGE_HEIGHT), Magick::Color("white"));
     setup_image(image);
-    print_image(image, key);
+    print_image(image, text);
     Magick::Blob blob;
     image.magick("PNG");
     image.write(&blob);
