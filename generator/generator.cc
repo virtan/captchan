@@ -74,7 +74,7 @@ static void print_digit(Magick::Image &image, char digit, bool first) {
         tmp.gaussianBlur(2, 2);
     }
     tmp.transparent(Magick::Color("white"));
-    long pos = (first ? 4 : right_pos(image)) - left_pos(tmp) + 4;
+    long pos = (first ? 0 : right_pos(image) - left_pos(tmp) + 4);
     image.composite(tmp, pos, -8, Magick::OverCompositeOp);
 }
 
@@ -111,7 +111,7 @@ static void print_image(Magick::Image &image, const std::string &number) {
     image.swirl(sw);
     image.wave(8, image.size().width() / (random() % 3 + 1));
     //image.trim();
-    long nu_width = right_pos(image) - left_pos(image) + 8;
+    long nu_width = right_pos(image) - left_pos(image) + 4;
     Magick::Image centered(Magick::Geometry(IMAGE_WIDTH, IMAGE_HEIGHT), Magick::Color("white"));
     centered.composite(image, (IMAGE_WIDTH-nu_width)/2, 0, Magick::OverCompositeOp);
     image=centered;
