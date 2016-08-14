@@ -37,8 +37,8 @@ void construct_net(network<sequential>& nn) {
        << average_pooling_layer<tan_h>(104, 24, 16, 2)  // S4, 16@104x24-in, 16@52x12-out
        << convolutional_layer<tan_h>(52, 12, 5, 16, 120) // C5, 16@52x12-in, 120@48x8-out
        << average_pooling_layer<tan_h>(48, 8, 120, 2)  // S6, 120@48x8-in, 120@24x4-out
-       << convolutional_layer<tan_h>(24, 4, 4, 120, 240) // C7, 120@24x4-in, 240@20x1-out
-       << fully_connected_layer<tan_h>(4800, 6);       // F8, 4800-in, 6-out
+       << convolutional_layer<tan_h>(24, 4, 4, 120, 240) // C7, 120@24x4-in, 240@21x1-out
+       << fully_connected_layer<tan_h>(5040, 6);       // F8, 5040-in, 6-out
 }
 
 vec_t round(const vec_t &s) {
@@ -103,7 +103,7 @@ void train_lenet(int num_epochs) {
 }
 
 int main(int argc, char **argv) {
-    if(argc != 2) {
+    if(argc != 4) {
         std::cerr << "Usage : " << argv[0] << " <training_size> <testing_size> <epochs>" << std::endl;
         return -1;
     }
