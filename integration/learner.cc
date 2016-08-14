@@ -115,28 +115,44 @@ int main(int argc, char **argv) {
     std::default_random_engine generator;
     std::uniform_int_distribution<int> distribution(100000,999999);
 
-    training_images.reserve(training_size);
-    training_output.reserve(training_size);
-    while(training_size--) {
-        int random = distribution(generator);
-        std::string str = std::to_string(random);
-        std::vector<float> desired_output;
-        for(char s : str) if(s) desired_output.push_back((float) (s - '0' + 1));
-        auto input = generate_vec(str);
-        training_images.emplace_back(vec_t(input.begin(), input.end()));
-        training_output.emplace_back(vec_t(desired_output.begin(), desired_output.end()));
-    }
+    {
+        std::cout << "constructing training set" << std::endl;
+        progress_display disp(training_size);
+        timer t;
+        size_t size = 0;
+        training_images.reserve(training_size);
+        training_output.reserve(training_size);
+        while(training_size--) {
+            int random = distribution(generator);
+            std::string str = std::to_string(random);
+            std::vector<float> desired_output;
+            for(char s : str) if(s) desired_output.push_back((float) (s - '0' + 1));
+            auto input = generate_vec(str);
+            size += input.size() * sizeof(input[0]);
+            training_images.emplace_back(vec_t(input.begin(), input.end()));
+            training_output.emplace_back(vec_t(desired_output.begin(), desired_output.end()));
+            disp += 1;
+        }
+        std::cout << "constructed in " << t.elapsed() << "s, total size: " << size << " bytes." << std::endl;
 
-    testing_images.reserve(testing_size);
-    testing_output.reserve(testing_size);
-    while(testing_size--) {
-        int random = distribution(generator);
-        std::string str = std::to_string(random);
-        std::vector<float> desired_output;
-        for(char s : str) if(s) desired_output.push_back((float) (s - '0' + 1));
-        auto input = generate_vec(str);
-        testing_images.emplace_back(vec_t(input.begin(), input.end()));
-        testing_output.emplace_back(vec_t(desired_output.begin(), desired_output.end()));
+        std::cout << "constructing testing set" << std::endl;
+        disp.restart(testing_size);
+        t.restart();
+        size = 0;
+        testing_images.reserve(testing_size);
+        testing_output.reserve(testing_size);
+        while(testing_size--) {
+            int random = distribution(generator);
+            std::string str = std::to_string(random);
+            std::vector<float> desired_output;
+            for(char s : str) if(s) desired_output.push_back((float) (s - '0' + 1));
+            auto input = generate_vec(str);
+            size += input.size() * sizeof(input[0]);
+            testing_images.emplace_back(vec_t(input.begin(), input.end()));
+            testing_output.emplace_back(vec_t(desired_output.begin(), desired_output.end()));
+            disp += 1;
+        }
+        std::cout << "constructed in " << t.elapsed() << "s, total size: " << size << " bytes." << std::endl;
     }
 
     train_lenet(epochs);

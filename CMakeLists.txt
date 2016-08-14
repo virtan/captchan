@@ -27,6 +27,9 @@ target_link_libraries(generator_test generator)
 add_executable(generator_test_vec generator/test_vec.cc)
 target_link_libraries(generator_test_vec generator)
 
+SET(BUILD_EXAMPLES OFF CACHE BOOL "Don't build examples")
+SET(BUILD_DOCS OFF CACHE BOOL "Don't build docs")
+SET(BUILD_TESTS OFF CACHE BOOL "Don't build tests")
 add_subdirectory(tiny-dnn)
 include_directories(tiny-dnn)
 
