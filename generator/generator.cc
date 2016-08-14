@@ -2,6 +2,7 @@
 #include <string>
 #include <random>
 #include <sstream>
+#include <vector>
 #include <sys/types.h>
 #include <dirent.h>
 #include <Magick++.h>
@@ -127,8 +128,21 @@ std::string generate_png(const std::string &text) {
     Magick::Image image(Magick::Geometry(IMAGE_WIDTH, IMAGE_HEIGHT), Magick::Color("white"));
     setup_image(image);
     print_image(image, text);
+    image.type(Magick::GrayscaleType);
     Magick::Blob blob;
     image.magick("PNG");
     image.write(&blob);
     return std::string((const char*) blob.data(), blob.length());
+}
+
+std::vector<float_t> generate_vec(const std::string &text) {
+    Magick::Image image(Magick::Geometry(IMAGE_WIDTH, IMAGE_HEIGHT), Magick::Color("white"));
+    setup_image(image);
+    print_image(image, text);
+    image.type(Magick::GrayscaleType);
+    // cv::Mat mat(image.rows(), image.columns(), CV_8UC1);
+    std::vector<float_t> result;
+    result.resize(IMAGE_WIDTH * IMAGE_HEIGHT);
+    image.write(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT, "R", Magick::FloatPixel, &(result[0]));
+    return result;
 }
