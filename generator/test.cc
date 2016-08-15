@@ -1,10 +1,12 @@
 #include <iostream>
 #include <fstream>
 #include <unistd.h>
+#include <stdlib.h>
 
 #include "generator.h"
 
 int main(int argc, char **argv) {
+    srandom(time(NULL));
     if(argc < 2) {
         std::cerr << "Usage: " << argv[0] << " <string>\n";
         exit(1);

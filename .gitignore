@@ -9,6 +9,7 @@ generated.txt
 generator_test
 generator_test_vec
 learner
+detector
 tags
 
 example_cifar_test
@@ -18,3 +19,7 @@ example_mnist_test
 example_mnist_train
 
 trained.weights
+trained.weights.onesymbol.unexpected
+*.png
+*.swp
+*.dylib

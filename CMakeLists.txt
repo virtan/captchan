@@ -11,7 +11,7 @@ set(PROJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 include_directories("${PROJECT_INCLUDE_DIR}")
 include_directories("${PROJECT_SOURCE_DIR}")
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g -Wall")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -std=c++11 -g -Wall")
 
 find_package(ImageMagick REQUIRED COMPONENTS Magick++)
 
@@ -34,8 +34,16 @@ add_subdirectory(tiny-dnn)
 include_directories(tiny-dnn)
 
 add_executable(learner 
-        integration/learner.cc
+        integration/net_configuration.h
         tiny-dnn/tiny_cnn/tiny_cnn.h
+        integration/learner.cc
     )
 target_link_libraries(learner generator pthread)
+
+add_executable(detector 
+        integration/net_configuration.h
+        tiny-dnn/tiny_cnn/tiny_cnn.h
+        integration/detector.cc
+    )
+target_link_libraries(detector generator pthread)
 
