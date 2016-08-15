@@ -50,7 +50,7 @@ int restore_int(float a) {
 bool compare(vec_t a, vec_t b) {
     if(a.size() != b.size()) return false;
     for(size_t i = 0; i < a.size(); ++i)
-        if(fabs(a[i] - b[i]) >= 0.01) return false;
+        if(isnan(a[i]) || isnan(b[i]) || fabs(a[i] - b[i]) >= 0.01) return false;
     return true;
 }
 
