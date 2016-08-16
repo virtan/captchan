@@ -26,8 +26,9 @@ void construct_net(network<sequential>& nn) {
             connection_table(tbl, 6, 16))              // C3, 6@108x28-in, 16@104x24-out
        << average_pooling_layer<tan_h>(104, 24, 16, 2)  // S4, 16@104x24-in, 16@52x12-out
        << convolutional_layer<tan_h>(52, 12, 5, 16, 120) // C5, 16@52x12-in, 120@48x8-out
-       << average_pooling_layer<tan_h>(48, 8, 120, 2)  // S4, 120@48x8-in, 120@24x4-out
-       << fully_connected_layer<tan_h>(11520, 6);       // F6, 11520-in, 6-out
+       << average_pooling_layer<tan_h>(48, 8, 120, 2)  // S5, 120@48x8-in, 120@24x4-out
+       << convolutional_layer<tan_h>(24, 4, 4, 120, 120) // C6, 120@24x4-in, 120@21x1-out
+       << fully_connected_layer<tan_h>(2520, 6);       // F7, 2520-in, 6-out
 
     // nn << convolutional_layer<tan_h>(32, 32, 5, 1, 6)  // C1, 1@32x32-in, 6@28x28-out
     //    << average_pooling_layer<tan_h>(28, 28, 6, 2)   // S2, 6@28x28-in, 6@14x14-out
