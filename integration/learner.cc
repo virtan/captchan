@@ -45,7 +45,8 @@ void train_lenet(int num_epochs) {
     timer t;
     int minibatch_size = 10;
 
-    optimizer.alpha *= static_cast<tiny_cnn::float_t>(std::sqrt(minibatch_size));
+    // optimizer.alpha *= static_cast<tiny_cnn::float_t>(std::sqrt(minibatch_size));
+    optimizer.alpha = 0.5;
 
     // create callback
     auto on_enumerate_epoch = [&](){
