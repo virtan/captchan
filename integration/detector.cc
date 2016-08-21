@@ -1,13 +1,13 @@
 #include <iostream>
 #include <fstream>
-#include <tiny_cnn/tiny_cnn.h>
+#include <tiny_dnn/tiny_dnn.h>
 #include <generator/generator.h>
 #include "net_configuration.h"
 
-using namespace tiny_cnn;
-using namespace tiny_cnn::activation;
+using namespace tiny_dnn;
+using namespace tiny_dnn::activation;
 
-network<sequential> nn;
+network<graph> nn;
 
 void load_net(const std::string &weight_file) {
     construct_net(nn);
@@ -32,7 +32,7 @@ void run_test_set(int tests) {
     //std::uniform_int_distribution<int> distribution(1, 9);
     progress_display disp(tests);
     timer t;
-    tiny_cnn::result test_result;
+    tiny_dnn::result test_result;
     while(tests--) {
         int random = distribution(generator);
         std::string code = std::to_string(random);

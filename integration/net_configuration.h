@@ -1,42 +1,27 @@
 #include <string>
-#include <tiny_cnn/tiny_cnn.h>
+#include <tiny_dnn/tiny_dnn.h>
 
-using namespace tiny_cnn;
-using namespace tiny_cnn::activation;
+using namespace tiny_dnn;
+using namespace tiny_dnn::activation;
+using namespace tiny_dnn::layers;
 
-void construct_net(network<sequential>& nn) {
-    // connection table [Y.Lecun, 1998 Table.1]
-#define O true
-#define X false
-    static const bool tbl[] = {
-        O, X, X, X, O, O, O, X, X, O, O, O, O, X, O, O,
-        O, O, X, X, X, O, O, O, X, X, O, O, O, O, X, O,
-        O, O, O, X, X, X, O, O, O, X, X, O, X, O, O, O,
-        X, O, O, O, X, X, O, O, O, O, X, X, O, X, O, O,
-        X, X, O, O, O, X, X, O, O, O, O, X, O, O, X, O,
-        X, X, X, O, O, O, X, X, O, O, O, O, X, O, O, O
-    };
-#undef O
-#undef X
+void construct_net(network<graph>& nn) {
+    auto conv1 = new convolutional_layer<tan_h>(220, 60, 5, 1, 32);
+    auto maxpool1 = new average_pooling_layer<tan_h>(216, 56, 32, 2);
+    auto conv2 = new convolutional_layer<tan_h>(108, 28, 5, 32, 32);
+    auto maxpool2 = new average_pooling_layer<tan_h>(104, 24, 32, 2);
 
-    // construct nets
-    nn << convolutional_layer<tan_h>(220, 60, 5, 1, 6)  // C1, 1@220x60-in, 6@216x56-out
-       << average_pooling_layer<tan_h>(216, 56, 6, 2)   // S2, 6@216x56-in, 6@108x28-out
-       << convolutional_layer<tan_h>(108, 28, 5, 6, 16,
-            connection_table(tbl, 6, 16))              // C3, 6@108x28-in, 16@104x24-out
-       << average_pooling_layer<tan_h>(104, 24, 16, 2)  // S4, 16@104x24-in, 16@52x12-out
-       << convolutional_layer<tan_h>(52, 12, 5, 16, 120) // C5, 16@52x12-in, 120@48x8-out
-       << average_pooling_layer<tan_h>(48, 8, 120, 2)  // S5, 120@48x8-in, 120@24x4-out
-       << convolutional_layer<tan_h>(24, 4, 4, 120, 120) // C6, 120@24x4-in, 120@21x1-out
-       << fully_connected_layer<tan_h>(2520, 6);       // F7, 2520-in, 6-out
+    *conv1 << *maxpool1 << *conv2 << *maxpool2;
 
-    // nn << convolutional_layer<tan_h>(32, 32, 5, 1, 6)  // C1, 1@32x32-in, 6@28x28-out
-    //    << average_pooling_layer<tan_h>(28, 28, 6, 2)   // S2, 6@28x28-in, 6@14x14-out
-    //    << convolutional_layer<tan_h>(14, 14, 5, 6, 16,
-    //         connection_table(tbl, 6, 16))              // C3, 6@14x14-in, 16@10x10-in
-    //    << average_pooling_layer<tan_h>(10, 10, 16, 2)  // S4, 16@10x10-in, 16@5x5-out
-    //    << convolutional_layer<tan_h>(5, 5, 5, 16, 120) // C5, 16@5x5-in, 120@1x1-out
-    //    << fully_connected_layer<tan_h>(120, 1);       // F6, 120-in, 1-out
+    std::vector<layer*> outputs;
+    for(int i = 0; i < 1; ++i) {
+        auto drop = new dropout_layer(19968, 0.5);
+        auto dense = new fully_connected_layer<tan_h>(19968, 1);
+        *maxpool2 << *drop << *dense;
+        outputs.push_back(dense);
+    }
+
+    construct_graph(nn, {conv1}, outputs);
 }
 
 vec_t round(const vec_t &s) {

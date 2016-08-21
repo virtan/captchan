@@ -4,20 +4,20 @@
 #include <random>
 #include <math.h>
 #include <stdlib.h>
-#include <tiny_cnn/tiny_cnn.h>
+#include <tiny_dnn/tiny_dnn.h>
 #include <generator/generator.h>
 #include "net_configuration.h"
 
-using namespace tiny_cnn;
-using namespace tiny_cnn::activation;
+using namespace tiny_dnn;
+using namespace tiny_dnn::activation;
 
 std::vector<vec_t> training_images;
 std::vector<vec_t> training_output;
 std::vector<vec_t> testing_images;
 std::vector<vec_t> testing_output;
 
-tiny_cnn::result test_lenet(network<sequential> &nn) {
-    tiny_cnn::result test_result;
+tiny_dnn::result test_lenet(network<graph> &nn) {
+    tiny_dnn::result test_result;
     nn.set_netphase(net_phase::test);
     for(size_t i = 0; i < testing_images.size(); ++i) {
         vec_t predicted = nn.predict(testing_images[i]);
@@ -32,7 +32,7 @@ tiny_cnn::result test_lenet(network<sequential> &nn) {
 
 void train_lenet(int num_epochs) {
     // specify loss-function and learning strategy
-    network<sequential> nn;
+    network<graph> nn;
     adagrad optimizer;
 
     construct_net(nn);
@@ -45,13 +45,13 @@ void train_lenet(int num_epochs) {
     timer t;
     int minibatch_size = 10;
 
-    // optimizer.alpha *= static_cast<tiny_cnn::float_t>(std::sqrt(minibatch_size));
+    // optimizer.alpha *= static_cast<tiny_dnn::float_t>(std::sqrt(minibatch_size));
     optimizer.alpha = 0.5;
 
     // create callback
     auto on_enumerate_epoch = [&](){
         std::cout << t.elapsed() << "s elapsed." << std::endl;
-        tiny_cnn::result res = test_lenet(nn);
+        tiny_dnn::result res = test_lenet(nn);
         std::cout << res.num_success << "/" << res.num_total << std::endl;
 
         std::cout << "\nepoch: " << ++current_epoch << "/" << num_epochs << std::endl;
