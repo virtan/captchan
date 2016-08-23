@@ -14,6 +14,7 @@ include_directories("${PROJECT_SOURCE_DIR}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -std=c++11 -g -Wall")
 
 find_package(ImageMagick REQUIRED COMPONENTS Magick++)
+find_package(ZLIB REQUIRED)
 
 set(GENERATOR_SOURCE_FILES generator/generator.h generator/generator.cc)
 add_library(generator SHARED ${GENERATOR_SOURCE_FILES})
@@ -26,6 +27,10 @@ target_link_libraries(generator_test generator)
 
 add_executable(generator_test_vec generator/test_vec.cc)
 target_link_libraries(generator_test_vec generator)
+
+add_executable(generator_bulk generator/bulk.cc)
+target_include_directories(generator_bulk PRIVATE ${ZLIB_INCLUDE_DIRS})
+target_link_libraries(generator_bulk generator ${ZLIB_LIBRARIES} pthread)
 
 SET(BUILD_EXAMPLES OFF CACHE BOOL "Don't build examples")
 SET(BUILD_DOCS OFF CACHE BOOL "Don't build docs")

@@ -8,6 +8,7 @@ generated.png
 generated.txt
 generator_test
 generator_test_vec
+generator_bulk
 learner
 detector
 tags
@@ -23,3 +24,4 @@ trained.weights.onesymbol.unexpected
 *.png
 *.swp
 *.dylib
+*.gz
