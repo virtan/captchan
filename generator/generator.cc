@@ -138,21 +138,21 @@ std::string generate_png(const std::string &text) {
     return std::string((const char*) blob.data(), blob.length());
 }
 
-static size_t make_square_pre(std::vector<float_t> &v) {
-    if(IMAGE_WIDTH == IMAGE_HEIGHT) return 0;
-    assert(IMAGE_WIDTH > IMAGE_HEIGHT);
-    size_t addon = IMAGE_WIDTH * ((IMAGE_WIDTH - IMAGE_HEIGHT) / 2);
-    for(size_t i = 0; i < addon; ++i) v[i] = 1.0;
-    return addon;
-}
-
-static void make_square_post(std::vector<float_t> &v) {
-    if(IMAGE_WIDTH == IMAGE_HEIGHT) return;
-    assert(IMAGE_WIDTH > IMAGE_HEIGHT);
-    size_t addon = IMAGE_WIDTH * (IMAGE_WIDTH - IMAGE_HEIGHT - ((IMAGE_WIDTH - IMAGE_HEIGHT) / 2));
-    size_t offset = IMAGE_WIDTH * (IMAGE_WIDTH - (addon/IMAGE_WIDTH));
-    for(size_t i = offset; i < offset + addon; ++i) v[i] = 1.0;
-}
+// static size_t make_square_pre(std::vector<float_t> &v) {
+//     if(IMAGE_WIDTH == IMAGE_HEIGHT) return 0;
+//     assert(IMAGE_WIDTH > IMAGE_HEIGHT);
+//     size_t addon = IMAGE_WIDTH * ((IMAGE_WIDTH - IMAGE_HEIGHT) / 2);
+//     for(size_t i = 0; i < addon; ++i) v[i] = 1.0;
+//     return addon;
+// }
+// 
+// static void make_square_post(std::vector<float_t> &v) {
+//     if(IMAGE_WIDTH == IMAGE_HEIGHT) return;
+//     assert(IMAGE_WIDTH > IMAGE_HEIGHT);
+//     size_t addon = IMAGE_WIDTH * (IMAGE_WIDTH - IMAGE_HEIGHT - ((IMAGE_WIDTH - IMAGE_HEIGHT) / 2));
+//     size_t offset = IMAGE_WIDTH * (IMAGE_WIDTH - (addon/IMAGE_WIDTH));
+//     for(size_t i = offset; i < offset + addon; ++i) v[i] = 1.0;
+// }
 
 std::vector<float_t> generate_vec(const std::string &text) {
     Magick::Image image(Magick::Geometry(IMAGE_WIDTH, IMAGE_HEIGHT), Magick::Color("white"));
@@ -160,10 +160,10 @@ std::vector<float_t> generate_vec(const std::string &text) {
     print_image(image, text);
     image.type(Magick::GrayscaleType);
     std::vector<float_t> result;
-    result.resize(IMAGE_WIDTH * IMAGE_WIDTH);
-    size_t offs = make_square_pre(result);
+    result.resize(IMAGE_WIDTH * IMAGE_HEIGHT);
+    size_t offs = 0; // make_square_pre(result);
     image.write(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT, "R", Magick::FloatPixel, &(result[offs]));
-    make_square_post(result);
+    // make_square_post(result);
     return result;
 }
 
@@ -173,10 +173,10 @@ captcha generate(const std::string &text) {
     print_image(image, text);
     image.type(Magick::GrayscaleType);
     captcha result;
-    result.vec.resize(IMAGE_WIDTH * IMAGE_WIDTH);
-    size_t offs = make_square_pre(result.vec);
+    result.vec.resize(IMAGE_WIDTH * IMAGE_HEIGHT);
+    size_t offs = 0; // make_square_pre(result.vec);
     image.write(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT, "R", Magick::FloatPixel, &(result.vec[offs]));
-    make_square_post(result.vec);
+    // make_square_post(result.vec);
     Magick::Blob blob;
     image.magick("PNG");
     image.write(&blob);
