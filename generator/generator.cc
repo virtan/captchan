@@ -140,8 +140,8 @@ static void print_image_light(Magick::Image &image, const std::string &number) {
     image=centered;
     Magick::Image tmp(Magick::Geometry(IMAGE_HEIGHT, IMAGE_HEIGHT), Magick::Color("white"));
     // print_lines(tmp);
-    tmp.wave(8, image.size().width() / (random() % 5 + 2));
-    tmp.trim();
+    // tmp.wave(8, image.size().width() / (random() % 5 + 2));
+    // tmp.trim();
     image.composite(tmp, 0, 0, Magick::MultiplyCompositeOp);
     image.transparent(Magick::Color("white"));
 }
@@ -192,6 +192,19 @@ std::vector<float_t> generate_vec(const std::string &text) {
     result.resize(IMAGE_WIDTH * IMAGE_HEIGHT);
     size_t offs = 0; // make_square_pre(result);
     image.write(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT, "R", Magick::FloatPixel, &(result[offs]));
+    // make_square_post(result);
+    return result;
+}
+
+std::vector<float_t> generate_vec_light(const std::string &text) {
+    Magick::Image image(Magick::Geometry(IMAGE_HEIGHT, IMAGE_HEIGHT), Magick::Color("white"));
+    setup_image(image);
+    print_image_light(image, text);
+    image.type(Magick::GrayscaleType);
+    std::vector<float_t> result;
+    result.resize(IMAGE_HEIGHT * IMAGE_HEIGHT);
+    size_t offs = 0; // make_square_pre(result);
+    image.write(0, 0, IMAGE_HEIGHT, IMAGE_HEIGHT, "R", Magick::FloatPixel, &(result[offs]));
     // make_square_post(result);
     return result;
 }

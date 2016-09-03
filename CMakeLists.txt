@@ -35,6 +35,10 @@ add_executable(generator_bulk generator/bulk.cc)
 target_include_directories(generator_bulk PRIVATE ${ZLIB_INCLUDE_DIRS})
 target_link_libraries(generator_bulk generator ${ZLIB_LIBRARIES} pthread)
 
+add_executable(generator_bulk_light generator/bulk_light.cc)
+target_include_directories(generator_bulk_light PRIVATE ${ZLIB_INCLUDE_DIRS})
+target_link_libraries(generator_bulk_light generator ${ZLIB_LIBRARIES} pthread)
+
 # SET(BUILD_EXAMPLES OFF CACHE BOOL "Don't build examples")
 # SET(BUILD_DOCS OFF CACHE BOOL "Don't build docs")
 # SET(BUILD_TESTS OFF CACHE BOOL "Don't build tests")
