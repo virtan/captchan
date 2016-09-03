@@ -127,10 +127,39 @@ static void print_image(Magick::Image &image, const std::string &number) {
     image.transparent(Magick::Color("white"));
 }
 
+static void print_image_light(Magick::Image &image, const std::string &number) {
+    for(std::string::size_type i=0;i<number.size();i++)
+        print_digit(image,number[i],!i);
+    double sw = random() % 10 - 20;
+    image.swirl(sw);
+    image.wave(8, image.size().width() / (random() % 3 + 1));
+    //image.trim();
+    long nu_width = right_pos(image) - left_pos(image) + 4;
+    Magick::Image centered(Magick::Geometry(IMAGE_HEIGHT, IMAGE_HEIGHT), Magick::Color("white"));
+    centered.composite(image, (IMAGE_HEIGHT-nu_width)/2, 0, Magick::OverCompositeOp);
+    image=centered;
+    Magick::Image tmp(Magick::Geometry(IMAGE_HEIGHT, IMAGE_HEIGHT), Magick::Color("white"));
+    // print_lines(tmp);
+    tmp.wave(8, image.size().width() / (random() % 5 + 2));
+    tmp.trim();
+    image.composite(tmp, 0, 0, Magick::MultiplyCompositeOp);
+    image.transparent(Magick::Color("white"));
+}
 std::string generate_png(const std::string &text) {
     Magick::Image image(Magick::Geometry(IMAGE_WIDTH, IMAGE_HEIGHT), Magick::Color("white"));
     setup_image(image);
     print_image(image, text);
+    image.type(Magick::GrayscaleType);
+    Magick::Blob blob;
+    image.magick("PNG");
+    image.write(&blob);
+    return std::string((const char*) blob.data(), blob.length());
+}
+
+std::string generate_png_light(const std::string &text) {
+    Magick::Image image(Magick::Geometry(IMAGE_HEIGHT, IMAGE_HEIGHT), Magick::Color("white"));
+    setup_image(image);
+    print_image_light(image, text);
     image.type(Magick::GrayscaleType);
     Magick::Blob blob;
     image.magick("PNG");

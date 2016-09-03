@@ -25,6 +25,9 @@ target_compile_definitions(generator PRIVATE IMAGE_WIDTH=220 IMAGE_HEIGHT=60 FON
 add_executable(generator_test generator/test.cc)
 target_link_libraries(generator_test generator)
 
+add_executable(generator_test_light generator/test_light.cc)
+target_link_libraries(generator_test_light generator)
+
 add_executable(generator_test_vec generator/test_vec.cc)
 target_link_libraries(generator_test_vec generator)
 
