@@ -26,7 +26,6 @@ int main(int argc, char **argv) {
     }
 
     progress disp; // amount
-    disp.start();
     std::string value;
     std::string vecs;
     auto amount_orig = amount;
@@ -45,7 +44,6 @@ int main(int argc, char **argv) {
 
         disp.update((float) (amount_orig - amount) / amount_orig);
     }
-    disp.done();
 
     gzclose(values);
     gzclose(data);
