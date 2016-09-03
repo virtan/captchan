@@ -78,7 +78,7 @@ net = tf.reshape(pre_net, [-1, 256])
 
 #y_ = tf.pack(branches, axis=0)
 #concatenated = tf.concat(0, branches)
-conc_flat = tf.reshape(concatenated, [-1, 256])
+conc_flat = tf.reshape(net, [-1, 256])
 conc_drop = tf.nn.dropout(conc_flat, keep_prob)
 W_final = weight_variable([256, 1])
 b_final = bias_variable([1])
@@ -125,15 +125,15 @@ def next_batch(batch_size):
         data = data[perm]
         offset = 0
     start = offset
-    offset += 50
+    offset += 500
     end = offset
     return data[start:end], values[start:end]
 
 sess = tf.InteractiveSession()
 sess.run(tf.initialize_all_variables())
 
-for i in range(500*amount/50):
-    batch = next_batch(50)
+for i in range(100*amount/500):
+    batch = next_batch(500)
     if i%100 == 0:
         train_accuracy = accuracy.eval(feed_dict={
             x:batch[0], y_: batch[1], keep_prob: 1.0})
