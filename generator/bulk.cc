@@ -2,12 +2,9 @@
 #include <string>
 #include <random>
 #include <zlib.h>
-#include <tiny_dnn/tiny_dnn.h>
 
+#include "progress.h"
 #include "generator.h"
-
-using namespace tiny_dnn;
-using namespace tiny_dnn::activation;
 
 int main(int argc, char **argv) {
     if(argc < 3) {
@@ -28,9 +25,11 @@ int main(int argc, char **argv) {
         exit(1);
     }
 
-    progress_display disp(amount);
+    progress disp; // amount
+    disp.start();
     std::string value;
     std::string vecs;
+    auto amount_orig = amount;
     while(amount--) {
         int random = distribution(generator);
         std::string str = std::to_string(random);
@@ -44,8 +43,9 @@ int main(int argc, char **argv) {
         for(float f : vec) vecs.append(1, ' ').append(std::to_string(f));
         gzwrite(data, vecs.data(), vecs.size());
 
-        disp += 1;
+        disp.update((float) (amount_orig - amount) / amount_orig);
     }
+    disp.done();
 
     gzclose(values);
     gzclose(data);

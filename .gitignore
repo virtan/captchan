@@ -7,6 +7,7 @@ libgenerator.so
 generated.png
 generated.txt
 generator_test
+generator_test_light
 generator_test_vec
 generator_bulk
 learner

@@ -35,23 +35,23 @@ add_executable(generator_bulk generator/bulk.cc)
 target_include_directories(generator_bulk PRIVATE ${ZLIB_INCLUDE_DIRS})
 target_link_libraries(generator_bulk generator ${ZLIB_LIBRARIES} pthread)
 
-SET(BUILD_EXAMPLES OFF CACHE BOOL "Don't build examples")
-SET(BUILD_DOCS OFF CACHE BOOL "Don't build docs")
-SET(BUILD_TESTS OFF CACHE BOOL "Don't build tests")
-add_subdirectory(tiny-dnn)
-include_directories(tiny-dnn)
-
-add_executable(learner 
-        integration/net_configuration.h
-        tiny-dnn/tiny_cnn/tiny_cnn.h
-        integration/learner.cc
-    )
-target_link_libraries(learner generator pthread)
-
-add_executable(detector 
-        integration/net_configuration.h
-        tiny-dnn/tiny_cnn/tiny_cnn.h
-        integration/detector.cc
-    )
-target_link_libraries(detector generator pthread)
-
+# SET(BUILD_EXAMPLES OFF CACHE BOOL "Don't build examples")
+# SET(BUILD_DOCS OFF CACHE BOOL "Don't build docs")
+# SET(BUILD_TESTS OFF CACHE BOOL "Don't build tests")
+# add_subdirectory(tiny-dnn)
+# include_directories(tiny-dnn)
+# 
+# add_executable(learner 
+#         integration/net_configuration.h
+#         tiny-dnn/tiny_cnn/tiny_cnn.h
+#         integration/learner.cc
+#     )
+# target_link_libraries(learner generator pthread)
+# 
+# add_executable(detector 
+#         integration/net_configuration.h
+#         tiny-dnn/tiny_cnn/tiny_cnn.h
+#         integration/detector.cc
+#     )
+# target_link_libraries(detector generator pthread)
+# 
