@@ -87,7 +87,7 @@ y = tf.nn.softmax(tf.matmul(conc_drop, W_final) + b_final)
 pprint.pprint(y)
 
 #cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]))
-reduced_difference = tf.reduce_mean(tf.sub(y_, y))
+reduced_difference = tf.reduce_mean(tf.abs(tf.sub(y_, y)))
 train_step = tf.train.AdamOptimizer(1e-4).minimize(reduced_difference)
 correct_prediction = tf.equal(tf.round(y_), tf.round(y))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
