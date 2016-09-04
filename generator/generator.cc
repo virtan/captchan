@@ -130,9 +130,9 @@ static void print_image(Magick::Image &image, const std::string &number) {
 static void print_image_light(Magick::Image &image, const std::string &number) {
     for(std::string::size_type i=0;i<number.size();i++)
         print_digit(image,number[i],!i);
-    double sw = random() % 10 - 20;
-    image.swirl(sw);
-    image.wave(8, image.size().width() / (random() % 3 + 1));
+    // double sw = random() % 10 - 20;
+    // image.swirl(sw);
+    // image.wave(8, image.size().width() / (random() % 3 + 1));
     //image.trim();
     long nu_width = right_pos(image) - left_pos(image) + 4;
     Magick::Image centered(Magick::Geometry(IMAGE_HEIGHT, IMAGE_HEIGHT), Magick::Color("white"));
