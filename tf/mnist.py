@@ -34,6 +34,8 @@ def show_img(data, name):
     img.save(name + '.png')
     img.show()
 
+saver = tf.train.Saver()
+
 sess = tf.InteractiveSession()
 
 x = tf.placeholder(tf.float32, shape=[None, 60*60])
@@ -158,6 +160,8 @@ for i in range(2000000):
 print("test accuracy %g"%accuracy.eval(feed_dict={
     x: data, y_: values, keep_prob: 1.0}))
 
+save_path = saver.save(sess, "model.ckpt")
+print("Model saved in file: %s" % save_path)
 # cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y_conv), reduction_indices=[1]))
 # train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
 # correct_prediction = tf.equal(tf.argmax(y_conv,1), tf.argmax(y_,1))
