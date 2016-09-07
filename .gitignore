@@ -27,3 +27,7 @@ trained.weights.onesymbol.unexpected
 *.swp
 *.dylib
 *.gz
+*.pyc
+checkpoint
+model.ckpt
+model.ckpt.meta

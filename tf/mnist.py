@@ -15,7 +15,7 @@ import model_60x60 as m
 
 import load_values as lv
 
-values, data, amount = lv.load_data_n_values('../c1k')
+values, data, amount = lv.load_data_n_values('../c10k')
 
 print "One-hotting values ..."
 values = np.reshape(values, (amount))
@@ -49,7 +49,7 @@ def next_batch(batch_size):
     end = offset
     return data[start:end], values[start:end]
 
-cross_entropy = tf.reduce_mean(-tf.reduce_sum(m.y_expected * tf.log(m.y), reduction_indices=[1]))
+cross_entropy = tf.reduce_mean(-tf.reduce_sum(m.y_expected * tf.log(m.y + 1e-10), reduction_indices=[1]))
 #ce_summ = tf.scalar_summary("cross entropy", cross_entropy)
 # reduced_difference = tf.reduce_mean(tf.abs(tf.sub(y_, y_conv)))
 train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
