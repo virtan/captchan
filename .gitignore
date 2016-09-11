@@ -29,5 +29,5 @@ trained.weights.onesymbol.unexpected
 *.gz
 *.pyc
 checkpoint
-model.ckpt
-model.ckpt.meta
+tf/model.ckpt
+tf/model.ckpt.meta

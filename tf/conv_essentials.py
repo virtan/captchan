@@ -18,15 +18,19 @@ def bias_variable(shape):
 def conv2d(x, W, P):
     return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding=P)
 
+def conv2d_strides(x, W, P, S):
+    return tf.nn.conv2d(x, W, strides=S, padding=P)
+
 def max_pool_2x2(x):
     return tf.nn.max_pool(x, ksize=[1, 2, 2, 1],
             strides=[1, 2, 2, 1], padding='SAME')
 
 def show_img(data, name):
     w, h = data.shape
-    data2 = np.empty((h,w,3), dtype = np.uint8)
+    data2 = np.empty((w,h,3), dtype = np.uint8)
     data2[:, :, 2] = data2[:, :, 1] = data2[:, :, 0] = data * 255
-    img = Image.fromarray(data2, 'RGB')
+    #img = Image.fromarray(np.transpose(data2, (1,0,2)), 'RGB')
+    img = Image.fromarray(np.reshape(data2, (h,w,3)), 'RGB')
     #img.save(name + '.png')
     img.show()
 
