@@ -2,6 +2,8 @@
 #include <fstream>
 #include <unistd.h>
 #include <stdlib.h>
+#include <string>
+#include <random>
 
 #include "progress.h"
 #include "generator.h"
