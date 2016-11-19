@@ -11,6 +11,7 @@ generator_test_light
 generator_test_vec
 generator_bulk
 generator_bulk_light
+generator_images
 learner
 detector
 tags
