@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string>
 #include <random>
+#include <time.h>
 
 #include "progress.h"
 #include "generator.h"
@@ -17,8 +18,11 @@ int main(int argc, char **argv) {
     std::string file_prefix = argv[1];
     int amount = atoi(argv[2]);
 
+    struct timespec ts;
+    clock_gettime(CLOCK_REALTIME, &ts);
+
     std::default_random_engine generator;
-    generator.seed(time(NULL));
+    generator.seed(ts.tv_nsec);
     std::uniform_int_distribution<int> distribution(100000,999999);
 
     progress disp; // amount
