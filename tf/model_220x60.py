@@ -7,7 +7,7 @@
 import tensorflow as tf
 import conv_essentials as ce
 
-x = tf.placeholder(tf.float32, shape = [None, 220*60])
+x = tf.placeholder(tf.float32, shape = [None, 220, 60, 1])
 y_expected = tf.placeholder(tf.float32, shape = [None, 60])
 keep_prob = tf.placeholder(tf.float32)
 
