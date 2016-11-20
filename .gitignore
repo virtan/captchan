@@ -32,3 +32,4 @@ trained.weights.onesymbol.unexpected
 checkpoint
 tf/model.ckpt
 tf/model.ckpt.meta
+tf/summary

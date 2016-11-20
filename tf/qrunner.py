@@ -49,22 +49,32 @@ with sess.as_default():
     filenames = tf.train.match_filenames_once("../images/i_*.png")
     pipeline = input_pipeline(filenames, 50, 4, 10)
 
-    cross_entropy = tf.reduce_mean(-tf.reduce_sum(m.y_expected * tf.log(m.y + 1e-10), reduction_indices=[1]))
+    reduced_sum = -tf.reduce_sum(m.y_expected * tf.log(m.y + 1e-10), reduction_indices=[1])
+    cross_entropy = tf.reduce_mean(reduced_sum)
+    tf.scalar_summary('cross_entropy', cross_entropy)
     #ce_summ = tf.scalar_summary("cross entropy", cross_entropy)
     # reduced_difference = tf.reduce_mean(tf.abs(tf.sub(y_, y_conv)))
     train_op = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
     correct_prediction = tf.equal(tf.argmax(tf.reshape(m.y, (-1, 6, 10)), 1), tf.argmax(tf.reshape(m.y_expected, (-1, 6, 10)),1))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+    tf.scalar_summary('accuracy', accuracy)
+
+    merged = tf.merge_all_summaries()
+    train_writer = tf.train.SummaryWriter('summary/train', sess.graph)
+    test_writer = tf.train.SummaryWriter('summary/test')
 
     init_op = tf.group(tf.initialize_all_variables(), tf.initialize_local_variables())
     sess.run(init_op)
     threads = tf.train.start_queue_runners(coord = coord)
 
     try:
+        i = 0
         while not coord.should_stop():
-            train_op.run(feed_dict = {
+            summary, _ = sess.run([merged, train_op], feed_dict = {
                 m.x: pipeline[0].eval(), m.y_expected: pipeline[1].eval(),
                 m.keep_prob: 1.0})
+            train_writer.add_summary(summary, i)
+            i += 1
 
     except tf.errors.OutOfRangeError:
         print('Done training -- epoch limit reached')
