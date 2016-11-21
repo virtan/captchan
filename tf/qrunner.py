@@ -34,7 +34,7 @@ def input_pipeline(filenames, batch_size, read_threads, num_epochs = None):
     # capacity must be larger than min_after_dequeue and the amount larger
     #   determines the maximum we will prefetch.  Recommendation:
     #   min_after_dequeue + (num_threads + a small safety margin) * batch_size
-    min_after_dequeue = 10
+    min_after_dequeue = 1000
     capacity = min_after_dequeue + 3 * batch_size
     image_batch, label_batch = tf.train.shuffle_batch_join(
       image_list, batch_size = batch_size, capacity = capacity,
@@ -47,7 +47,7 @@ sess = tf.Session()
 with sess.as_default():
     coord = tf.train.Coordinator()
     filenames = tf.train.match_filenames_once("../images/i_*.png")
-    pipeline = input_pipeline(filenames, 50, 4, 10)
+    pipeline = input_pipeline(filenames, 100, 28, 10)
 
     reduced_sum = -tf.reduce_sum(m.y_expected * tf.log(m.y + 1e-10), reduction_indices=[1])
     cross_entropy = tf.reduce_mean(reduced_sum)
@@ -70,10 +70,18 @@ with sess.as_default():
     try:
         i = 0
         while not coord.should_stop():
-            summary, _ = sess.run([merged, train_op], feed_dict = {
-                m.x: pipeline[0].eval(), m.y_expected: pipeline[1].eval(),
-                m.keep_prob: 1.0})
-            train_writer.add_summary(summary, i)
+            batch_x = pipeline[0].eval()
+            batch_y_expected = pipeline[1].eval()
+            if i%100 == 0:
+                test_summary, test_accuracy = sess.run([merged, accuracy], feed_dict = {
+                        m.x: batch_x, m.y_expected: batch_y_expected,
+                        m.keep_prob: 1.0})
+                test_writer.add_summary(test_summary, i)
+                print("step %d, training accuracy %g"%(i, test_accuracy))
+            train_summary, _ = sess.run([merged, train_op], feed_dict = {
+                m.x: batch_x, m.y_expected: batch_y_expected, 
+                m.keep_prob: 0.5})
+            train_writer.add_summary(train_summary, i)
             i += 1
 
     except tf.errors.OutOfRangeError:
@@ -81,6 +89,8 @@ with sess.as_default():
     finally:
         coord.request_stop()
         coord.join(threads)
+        save_path = saver.save(sess, "model.ckpt")
+        print("Model saved in file: %s" % save_path)
         sess.close()
 
 # try:
