@@ -3,6 +3,8 @@
 import tensorflow as tf
 import conv_essentials as ce
 import model_220x60 as m
+import numpy as np
+from PIL import Image
 
 def read_pngs(filename_queue):
     image_reader = tf.WholeFileReader()
@@ -10,7 +12,7 @@ def read_pngs(filename_queue):
     #print(image_filename.eval())
     image = tf.image.decode_png(image_file, channels=1)
     image = tf.reshape(image, [220, 60, 1])
-    image = tf.to_float(image)
+    image = tf.div(tf.to_float(image), 255)
     label_reversed_str = tf.reverse(tf.decode_raw(image_filename, tf.uint8),
             [True])[4:10]
     label_number = tf.reverse(tf.sub(tf.to_int32(label_reversed_str),
@@ -66,12 +68,18 @@ with sess.as_default():
     init_op = tf.group(tf.initialize_all_variables(), tf.initialize_local_variables())
     sess.run(init_op)
     threads = tf.train.start_queue_runners(coord = coord)
+    saver = tf.train.Saver()
 
     try:
         i = 0
         while not coord.should_stop():
-            batch_x = pipeline[0].eval()
-            batch_y_expected = pipeline[1].eval()
+            batch_x, batch_y_expected = sess.run(pipeline)
+            #if i%1000 == 0:
+            #    print("step %d"%(i))
+            #    print "first value: "
+            #    print tf.reshape(batch_y_expected[0], [6, 10]).eval()
+            #    print "pic generated"
+            #    ce.show_img(np.reshape(batch_x[0], (220,60)), 'pic')
             if i%100 == 0:
                 test_summary, test_accuracy = sess.run([merged, accuracy], feed_dict = {
                         m.x: batch_x, m.y_expected: batch_y_expected,
