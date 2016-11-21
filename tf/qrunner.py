@@ -13,7 +13,7 @@ sess = tf.Session()
 with sess.as_default():
     coord = tf.train.Coordinator()
     filenames = tf.train.match_filenames_once("../images/i_*.png")
-    pipeline = ce.input_pipeline(filenames, 50, 28, 10)
+    pipeline = ce.input_pipeline(filenames, 50, 4, 300)
 
     reduced_sum = -tf.reduce_sum(m.y_expected * tf.log(m.y + 1e-10), reduction_indices=[1])
     cross_entropy = tf.reduce_mean(reduced_sum)
