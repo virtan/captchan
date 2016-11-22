@@ -16,8 +16,10 @@ with sess.as_default():
     pipeline = ce.input_pipeline(filenames, 50, 4, 300)
 
     y_reshaped = tf.reshape(m.y, [-1, 6, 10])
+    y_lreshaped = tf.reshape(m.y, [-1, 10])
     y_expected_reshaped = tf.reshape(m.y_expected, [-1, 6, 10])
-    cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(y_reshaped, y_expected_reshaped))
+    y_expected_lreshaped = tf.reshape(m.y_expected, [-1, 10])
+    cross_entropy = tf.reduce_mean(tf.reshape(tf.nn.softmax_cross_entropy_with_logits(y_lreshaped, y_expected_lreshaped), [-1, 6]))
     tf.scalar_summary('cross_entropy', cross_entropy)
     #ce_summ = tf.scalar_summary("cross entropy", cross_entropy)
     # reduced_difference = tf.reduce_mean(tf.abs(tf.sub(y_, y_conv)))
