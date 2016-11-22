@@ -15,13 +15,14 @@ with sess.as_default():
     filenames = tf.train.match_filenames_once("../images/i_*.png")
     pipeline = ce.input_pipeline(filenames, 50, 4, 300)
 
-    reduced_sum = -tf.reduce_sum(m.y_expected * tf.log(m.y + 1e-10), reduction_indices=[1])
-    cross_entropy = tf.reduce_mean(reduced_sum)
+    y_reshaped = tf.reshape(m.y, [-1, 6, 10])
+    y_expected_reshaped = tf.reshape(m.y_expected, [-1, 6, 10])
+    cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(y_reshaped, y_expected_reshaped))
     tf.scalar_summary('cross_entropy', cross_entropy)
     #ce_summ = tf.scalar_summary("cross entropy", cross_entropy)
     # reduced_difference = tf.reduce_mean(tf.abs(tf.sub(y_, y_conv)))
     train_op = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
-    correct_prediction = tf.equal(tf.argmax(tf.reshape(m.y, (-1, 6, 10)), 1), tf.argmax(tf.reshape(m.y_expected, (-1, 6, 10)),1))
+    correct_prediction = tf.reduce_all(tf.equal(tf.argmax(y_reshaped, 1), tf.argmax(y_expected_reshaped,1)), [1])
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
     tf.scalar_summary('accuracy', accuracy)
 
