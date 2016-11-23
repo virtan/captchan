@@ -9,11 +9,12 @@ import model_220x60 as m
 
 
 sess = tf.Session()
+batch = 50
 
 with sess.as_default():
     coord = tf.train.Coordinator()
     filenames = tf.train.match_filenames_once("../images/i_*.png")
-    pipeline = ce.input_pipeline(filenames, 50, 4, 300)
+    pipeline = ce.input_pipeline(filenames, batch, 4, 300)
 
     y_reshaped = tf.reshape(m.y, [-1, 6, 10])
     y_lreshaped = tf.reshape(m.y, [-1, 10])
@@ -24,6 +25,7 @@ with sess.as_default():
     #train_op = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
     train_op = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
     correct_prediction = tf.reduce_all(tf.equal(tf.argmax(y_reshaped, 1), tf.argmax(y_expected_reshaped,1)), [1])
+    total_matches = tf.reduce_sum(tf.cast(tf.equal(tf.argmax(y_reshaped, 1), tf.argmax(y_expected_reshaped,1)), tf.float32))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
     tf.scalar_summary('accuracy', accuracy)
 
@@ -48,11 +50,11 @@ with sess.as_default():
             #    print "pic generated"
             if i%100 == 0:
                 #y_reshaped_, y_lreshaped_, y_expected_reshaped_, y_expected_lreshaped_, cross_entropy_, correct_prediction_, accuracy_, test_summary, test_accuracy = sess.run([y_reshaped, y_lreshaped, y_expected_reshaped, y_expected_lreshaped, cross_entropy, correct_prediction, accuracy, merged, accuracy], feed_dict = {
-                test_summary, test_accuracy = sess.run([merged, accuracy], feed_dict = {
+                cross_entropy, total_matches, test_summary, test_accuracy = sess.run([cross_entropy, total_matches, merged, accuracy], feed_dict = {
                         m.x: batch_x, m.y_expected: batch_y_expected,
                         m.keep_prob: 1.0})
                 test_writer.add_summary(test_summary, i)
-                print("step %d, training accuracy %g"%(i, test_accuracy))
+                print("step %d, training accuracy %g, cross_entropy %g, total_matches %g/%g"%(i, test_accuracy, cross_entropy, total_matches, batch*6))
                 #print "y_reshaped:\n"
                 #print y_reshaped
                 #print y_reshaped_
