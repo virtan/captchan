@@ -29,13 +29,27 @@ h_conv3 = tf.nn.relu(ce.conv2d_strides(h_pool2, w_conv3, 'VALID', [1, 2, 1, 1]) 
 
 h_pool2_flat = tf.reshape(h_conv3, [-1, 21*120])
 
-w_fc1 = ce.weight_variable([21*120, 8*84])
-b_fc1 = ce.bias_variable([8*84])
-h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, w_fc1) + b_fc1) # 11x120 -> 6x84
+h_fc1_1 = tf.nn.relu(tf.matmul(h_pool2_flat, ce.weight_variable([21*120, 84])) + ce.bias_variable([84])) # 11x120 -> 84
+h_fc1_2 = tf.nn.relu(tf.matmul(h_pool2_flat, ce.weight_variable([21*120, 84])) + ce.bias_variable([84])) # 11x120 -> 84
+h_fc1_3 = tf.nn.relu(tf.matmul(h_pool2_flat, ce.weight_variable([21*120, 84])) + ce.bias_variable([84])) # 11x120 -> 84
+h_fc1_4 = tf.nn.relu(tf.matmul(h_pool2_flat, ce.weight_variable([21*120, 84])) + ce.bias_variable([84])) # 11x120 -> 84
+h_fc1_5 = tf.nn.relu(tf.matmul(h_pool2_flat, ce.weight_variable([21*120, 84])) + ce.bias_variable([84])) # 11x120 -> 84
+h_fc1_6 = tf.nn.relu(tf.matmul(h_pool2_flat, ce.weight_variable([21*120, 84])) + ce.bias_variable([84])) # 11x120 -> 84
 
-h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
+h_fc1_drop_1 = tf.nn.dropout(h_fc1_1, keep_prob)
+h_fc1_drop_2 = tf.nn.dropout(h_fc1_2, keep_prob)
+h_fc1_drop_3 = tf.nn.dropout(h_fc1_3, keep_prob)
+h_fc1_drop_4 = tf.nn.dropout(h_fc1_4, keep_prob)
+h_fc1_drop_5 = tf.nn.dropout(h_fc1_5, keep_prob)
+h_fc1_drop_6 = tf.nn.dropout(h_fc1_6, keep_prob)
 
-w_fc2 = ce.weight_variable([8*84, 6*10])
-b_fc2 = ce.bias_variable([6*10])
-y = tf.nn.softmax(tf.matmul(h_fc1_drop, w_fc2) + b_fc2) # 6x84 -> 6x10
+y1 = tf.nn.softmax(tf.matmul(h_fc1_drop_1, ce.weight_variable([84, 10])) + ce.bias_variable([10])) # 84 -> 10
+y2 = tf.nn.softmax(tf.matmul(h_fc1_drop_2, ce.weight_variable([84, 10])) + ce.bias_variable([10])) # 84 -> 10
+y3 = tf.nn.softmax(tf.matmul(h_fc1_drop_3, ce.weight_variable([84, 10])) + ce.bias_variable([10])) # 84 -> 10
+y4 = tf.nn.softmax(tf.matmul(h_fc1_drop_4, ce.weight_variable([84, 10])) + ce.bias_variable([10])) # 84 -> 10
+y5 = tf.nn.softmax(tf.matmul(h_fc1_drop_5, ce.weight_variable([84, 10])) + ce.bias_variable([10])) # 84 -> 10
+y6 = tf.nn.softmax(tf.matmul(h_fc1_drop_6, ce.weight_variable([84, 10])) + ce.bias_variable([10])) # 84 -> 10
+
+y_merged = tf.reshape([y1,y2,y3,y4,y5,y6], [6, -1, 10]) # 6x (batch) x10
+y = tf.transpose(y_merged, [1,0,2]) # (batch x) 6x10
 

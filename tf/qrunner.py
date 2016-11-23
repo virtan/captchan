@@ -20,16 +20,21 @@ with sess.as_default():
     y_lreshaped = tf.reshape(m.y, [batch*6, 10])
     y_expected_reshaped = tf.reshape(m.y_expected, [batch, 6, 10])
     y_expected_lreshaped = tf.reshape(m.y_expected, [batch*6, 10])
-    cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(y_lreshaped, y_expected_lreshaped))
-    tf.scalar_summary('cross_entropy', cross_entropy)
-    #train_op = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
-    train_op = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
+
     bool_tensor = tf.equal(tf.argmax(y_reshaped, 2), tf.argmax(y_expected_reshaped, 2))
     correct_prediction = tf.reduce_all(bool_tensor, [1])
     total_matches = tf.reduce_sum(tf.cast(bool_tensor, tf.float32))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
     tf.scalar_summary('accuracy', accuracy)
 
+    softmaxed = tf.nn.softmax_cross_entropy_with_logits(y_lreshaped, y_expected_lreshaped)
+    cross_entropy = tf.reduce_mean(tf.reshape(softmaxed, [batch, 6]), [0])
+    #cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(y_lreshaped, y_expected_lreshaped))
+    #cross_entropy = tf.sub(1., tf.div(total_matches, tf.mul(batch, 6.)))
+
+    #tf.scalar_summary('cross_entropy', cross_entropy)
+    train_op = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
+    #train_op = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
     merged = tf.merge_all_summaries()
     train_writer = tf.train.SummaryWriter('summary/train', sess.graph)
     test_writer = tf.train.SummaryWriter('summary/test')
@@ -55,7 +60,7 @@ with sess.as_default():
                         m.x: batch_x, m.y_expected: batch_y_expected,
                         m.keep_prob: 1.0})
                 test_writer.add_summary(test_summary, i)
-                print("step %d, training accuracy %g, cross_entropy %g, total_matches %g/%g"%(i, test_accuracy, cross_entropy_, total_matches_, batch*6))
+                print("step %d, training accuracy %g, cross_entropy %s, total_matches %g/%g"%(i, test_accuracy, (','.join([str(a) for a in cross_entropy_])), total_matches_, batch*6))
                 #print "bool_tensor:\n"
                 #print bool_tensor
                 #print bool_tensor_
