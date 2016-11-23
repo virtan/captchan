@@ -47,32 +47,33 @@ with sess.as_default():
             #    ce.show_img(np.reshape(batch_x[0], (220,60)), 'pic')
             #    print "pic generated"
             if i%100 == 0:
-                y_reshaped_, y_lreshaped_, y_expected_reshaped_, y_expected_lreshaped_, cross_entropy_, correct_prediction_, accuracy_, test_summary, test_accuracy = sess.run([y_reshaped, y_lreshaped, y_expected_reshaped, y_expected_lreshaped, cross_entropy, correct_prediction, accuracy, merged, accuracy], feed_dict = {
+                #y_reshaped_, y_lreshaped_, y_expected_reshaped_, y_expected_lreshaped_, cross_entropy_, correct_prediction_, accuracy_, test_summary, test_accuracy = sess.run([y_reshaped, y_lreshaped, y_expected_reshaped, y_expected_lreshaped, cross_entropy, correct_prediction, accuracy, merged, accuracy], feed_dict = {
+                test_summary, test_accuracy = sess.run([merged, accuracy], feed_dict = {
                         m.x: batch_x, m.y_expected: batch_y_expected,
                         m.keep_prob: 1.0})
                 test_writer.add_summary(test_summary, i)
                 print("step %d, training accuracy %g"%(i, test_accuracy))
-                print "y_reshaped:\n"
-                print y_reshaped
-                print y_reshaped_
-                print "y_lreshaped:\n"
-                print y_lreshaped
-                print y_lreshaped_
-                print "y_expected_reshaped:\n"
-                print y_expected_reshaped
-                print y_expected_reshaped_
-                print "y_expected_lreshaped:\n"
-                print y_expected_lreshaped
-                print y_expected_lreshaped_
-                print "cross_entropy:\n"
-                print cross_entropy
-                print cross_entropy_
-                print "correct_prediction:\n"
-                print correct_prediction
-                print correct_prediction_
-                print "accuracy:\n"
-                print accuracy
-                print accuracy_
+                #print "y_reshaped:\n"
+                #print y_reshaped
+                #print y_reshaped_
+                #print "y_lreshaped:\n"
+                #print y_lreshaped
+                #print y_lreshaped_
+                #print "y_expected_reshaped:\n"
+                #print y_expected_reshaped
+                #print y_expected_reshaped_
+                #print "y_expected_lreshaped:\n"
+                #print y_expected_lreshaped
+                #print y_expected_lreshaped_
+                #print "cross_entropy:\n"
+                #print cross_entropy
+                #print cross_entropy_
+                #print "correct_prediction:\n"
+                #print correct_prediction
+                #print correct_prediction_
+                #print "accuracy:\n"
+                #print accuracy
+                #print accuracy_
                 save_path = saver.save(sess, "model.ckpt")
             train_summary, _ = sess.run([merged, train_op], feed_dict = {
                 m.x: batch_x, m.y_expected: batch_y_expected, 
