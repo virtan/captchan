@@ -16,16 +16,17 @@ with sess.as_default():
     filenames = tf.train.match_filenames_once("../images/i_*.png")
     pipeline = ce.input_pipeline(filenames, batch, 4, 300)
 
-    y_reshaped = tf.reshape(m.y, [-1, 6, 10])
-    y_lreshaped = tf.reshape(m.y, [-1, 10])
-    y_expected_reshaped = tf.reshape(m.y_expected, [-1, 6, 10])
-    y_expected_lreshaped = tf.reshape(m.y_expected, [-1, 10])
+    y_reshaped = tf.reshape(m.y, [batch, 6, 10])
+    y_lreshaped = tf.reshape(m.y, [batch*6, 10])
+    y_expected_reshaped = tf.reshape(m.y_expected, [batch, 6, 10])
+    y_expected_lreshaped = tf.reshape(m.y_expected, [batch*6, 10])
     cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(y_lreshaped, y_expected_lreshaped))
     tf.scalar_summary('cross_entropy', cross_entropy)
     #train_op = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
     train_op = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
-    correct_prediction = tf.reduce_all(tf.equal(tf.argmax(y_reshaped, 1), tf.argmax(y_expected_reshaped,1)), [1])
-    total_matches = tf.reduce_sum(tf.cast(tf.equal(tf.argmax(y_reshaped, 1), tf.argmax(y_expected_reshaped,1)), tf.float32))
+    bool_tensor = tf.equal(tf.argmax(y_reshaped, 2), tf.argmax(y_expected_reshaped, 2))
+    correct_prediction = tf.reduce_all(bool_tensor, [1])
+    total_matches = tf.reduce_sum(tf.cast(bool_tensor, tf.float32))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
     tf.scalar_summary('accuracy', accuracy)
 
@@ -50,11 +51,14 @@ with sess.as_default():
             #    print "pic generated"
             if i%100 == 0:
                 #y_reshaped_, y_lreshaped_, y_expected_reshaped_, y_expected_lreshaped_, cross_entropy_, correct_prediction_, accuracy_, test_summary, test_accuracy = sess.run([y_reshaped, y_lreshaped, y_expected_reshaped, y_expected_lreshaped, cross_entropy, correct_prediction, accuracy, merged, accuracy], feed_dict = {
-                cross_entropy_, total_matches_, test_summary, test_accuracy = sess.run([cross_entropy, total_matches, merged, accuracy], feed_dict = {
+                cross_entropy_, total_matches_, bool_tensor_, test_summary, test_accuracy = sess.run([cross_entropy, total_matches, bool_tensor, merged, accuracy], feed_dict = {
                         m.x: batch_x, m.y_expected: batch_y_expected,
                         m.keep_prob: 1.0})
                 test_writer.add_summary(test_summary, i)
                 print("step %d, training accuracy %g, cross_entropy %g, total_matches %g/%g"%(i, test_accuracy, cross_entropy_, total_matches_, batch*6))
+                print "bool_tensor:\n"
+                print bool_tensor
+                print bool_tensor_
                 #print "y_reshaped:\n"
                 #print y_reshaped
                 #print y_reshaped_
