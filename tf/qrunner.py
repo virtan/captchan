@@ -50,11 +50,11 @@ with sess.as_default():
             #    print "pic generated"
             if i%100 == 0:
                 #y_reshaped_, y_lreshaped_, y_expected_reshaped_, y_expected_lreshaped_, cross_entropy_, correct_prediction_, accuracy_, test_summary, test_accuracy = sess.run([y_reshaped, y_lreshaped, y_expected_reshaped, y_expected_lreshaped, cross_entropy, correct_prediction, accuracy, merged, accuracy], feed_dict = {
-                cross_entropy, total_matches, test_summary, test_accuracy = sess.run([cross_entropy, total_matches, merged, accuracy], feed_dict = {
+                cross_entropy_, total_matches_, test_summary, test_accuracy = sess.run([cross_entropy, total_matches, merged, accuracy], feed_dict = {
                         m.x: batch_x, m.y_expected: batch_y_expected,
                         m.keep_prob: 1.0})
                 test_writer.add_summary(test_summary, i)
-                print("step %d, training accuracy %g, cross_entropy %g, total_matches %g/%g"%(i, test_accuracy, cross_entropy, total_matches, batch*6))
+                print("step %d, training accuracy %g, cross_entropy %g, total_matches %g/%g"%(i, test_accuracy, cross_entropy_, total_matches_, batch*6))
                 #print "y_reshaped:\n"
                 #print y_reshaped
                 #print y_reshaped_
