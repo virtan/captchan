@@ -35,6 +35,10 @@ with sess.as_default():
 
     batch_str = tf.placeholder(tf.string)
     #tf.image_summary("image_" + batch_str, tf.reshape(m.x, [-1,60,220,1]), max_images=1)
+    #grid_x = 3
+    #grid_y = 2
+    #grid = ce.put_kernels_on_grid(m.w_conv1, grid_y, grid_x)
+    #tf.image_summary('h_conv1/features/' + batch_str, grid, max_images=1)
 
     #tf.scalar_summary('cross_entropy', cross_entropy)
     train_op = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
