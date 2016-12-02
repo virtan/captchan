@@ -19,6 +19,12 @@ with sess.as_default():
     threads = tf.train.start_queue_runners(coord = coord)
     saver.restore(sess, "model.ckpt")
 
+    grid_x = 12
+    grid_y = 10
+    grid = ce.put_kernels_on_grid(m.w_conv3, grid_y, grid_x)
+    grid_flat = tf.reshape(tf.slice(grid, [0, 0, 0, 10], [1, 150, 180, 1]), [180, 150])
+    ce.show_img(grid_flat.eval(), "h_conv_2/features")
+
     while not coord.should_stop():
         raw_input('Enter to test next random pic...')
         print
