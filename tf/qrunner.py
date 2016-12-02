@@ -29,8 +29,12 @@ with sess.as_default():
 
     softmaxed = tf.nn.softmax_cross_entropy_with_logits(y_lreshaped, y_expected_lreshaped)
     cross_entropy = tf.reduce_mean(tf.reshape(softmaxed, [batch, 6]), [0])
+    tf.scalar_summary(['cross_entropy_1', 'cross_entropy_2', 'cross_entropy_3', 'cross_entropy_4', 'cross_entropy_5', 'cross_entropy_6'], cross_entropy)
     #cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(y_lreshaped, y_expected_lreshaped))
     #cross_entropy = tf.sub(1., tf.div(total_matches, tf.mul(batch, 6.)))
+
+    batch_str = tf.placeholder(tf.string)
+    #tf.image_summary("image_" + batch_str, tf.reshape(m.x, [-1,60,220,1]), max_images=1)
 
     #tf.scalar_summary('cross_entropy', cross_entropy)
     train_op = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
@@ -48,7 +52,7 @@ with sess.as_default():
         i = 0
         while not coord.should_stop():
             batch_x, batch_y_expected = sess.run(pipeline)
-            #if i%1000 == 0:
+            #if i%1000 == 0]:
             #    print("step %d"%(i))
             #    print "first value: "
             #    print tf.reshape(batch_y_expected[0], [6, 10]).eval()
@@ -56,9 +60,10 @@ with sess.as_default():
             #    print "pic generated"
             if i%100 == 0:
                 #y_reshaped_, y_lreshaped_, y_expected_reshaped_, y_expected_lreshaped_, cross_entropy_, correct_prediction_, accuracy_, test_summary, test_accuracy = sess.run([y_reshaped, y_lreshaped, y_expected_reshaped, y_expected_lreshaped, cross_entropy, correct_prediction, accuracy, merged, accuracy], feed_dict = {
+                #img = tf.image_summary("image_{:06d}".format(i), tf.reshape(batch_x, [-1, 60, 220, 1]))
                 cross_entropy_, total_matches_, test_summary, test_accuracy = sess.run([cross_entropy, total_matches, merged, accuracy], feed_dict = {
                         m.x: batch_x, m.y_expected: batch_y_expected,
-                        m.keep_prob: 1.0})
+                        m.keep_prob: 1.0, batch_str: str(i)})
                 test_writer.add_summary(test_summary, i)
                 print("step %d, training accuracy %g, cross_entropy %s, total_matches %g/%g"%(i, test_accuracy, (','.join([str(a) for a in cross_entropy_])), total_matches_, batch*6))
                 #print "bool_tensor:\n"
@@ -88,7 +93,7 @@ with sess.as_default():
                 save_path = saver.save(sess, "model.ckpt")
             train_summary, _ = sess.run([merged, train_op], feed_dict = {
                 m.x: batch_x, m.y_expected: batch_y_expected, 
-                m.keep_prob: 0.5})
+                m.keep_prob: 0.5, batch_str: str(i)})
             train_writer.add_summary(train_summary, i)
             i += 1
 
